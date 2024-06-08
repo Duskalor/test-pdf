@@ -1,0 +1,23 @@
+{
+  "name": "test-pdf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pdf-parse": "^1.1.1",
+    "pdf-text": "^0.4.0",
+    "pdf-to-img": "^4.0.0",
+    "pdf.js-extract": "^0.2.1",
+    "sharp": "^0.33.4",
+    "tesseract.js": "^5.1.0",
+    "text-from-image": "^1.1.1",
+    "xlsx": "^0.18.5"
+  }
+}
