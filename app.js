@@ -1,4 +1,6 @@
 import { pdf } from 'pdf-to-img';
+// import { pdfToPng } from 'pdf-to-png-converter';
+
 import Tesseract from 'tesseract.js';
 import sharp from 'sharp';
 import { toXlsx } from './toxlsx.js';
@@ -6,10 +8,13 @@ import { toXlsx } from './toxlsx.js';
 const getImage = async (document) => {
   const Buffers = [];
 
+  console.time('normalize');
+
   for await (const image of document) {
     Buffers.push(image);
     break;
   }
+  console.timeEnd('normalize');
   return Buffers[0];
 };
 
@@ -42,29 +47,28 @@ const buscarTexto = (texto, valores) => {
 };
 
 const titles = {
-  FUNDACION: 'PROTOCOLO DE FUNDACION',
+  FUNDACION: 'PROTOCOLO DE FUNDACIÓN',
   VACIADO: 'PROTOCOLO DE PRE VACIADO',
 };
 
 async function main() {
   console.time('PDF Processing'); // Inicia el temporizador
+
   const document = await pdf(
     './datos/LP13692S-0132-0410-PTC-CFU-00029_REV0.pdf',
     { scale: 5 }
   );
 
+  // return;
   const firstImage = await getImage(document);
   const image = await getSharpImage(firstImage);
 
   const {
     data: { text },
   } = await Tesseract.recognize(image, 'spa');
-
-  const valueee = buscarTexto(text, Object.keys(titles));
-
+  const textNomalize = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const valueee = buscarTexto(textNomalize, Object.keys(titles));
   const firstTitle = titles[valueee];
-  console.log(text);
-  console.log({ firstTitle });
 
   const regexArea = /AREA DE TRABAJO:\s*([^\n]+)/;
   const matchArea = regexArea.exec(text);
@@ -79,9 +83,7 @@ async function main() {
   const regexActiv = /ACTIVIDAD:\s*([^\n]+)/;
   const actividad = regexActiv.exec(text)[0];
 
-  let title = `${firstTitle}-${areaTrabajo}-${descripcion}-${actividad}`;
-
-  return;
+  let title = `${firstTitle} - ${areaTrabajo} - ${descripcion} - ${actividad}`;
   let commen = '';
   if (title.length > 255) {
     title.slice(0, 255);
@@ -114,7 +116,7 @@ async function main() {
     Sustituir: '',
   };
   console.log(finalJson);
-  toXlsx([finalJson]);
+  // toXlsx([finalJson]);
   console.timeEnd('PDF Processing');
 }
 main();
