@@ -5,20 +5,17 @@ import Tesseract from 'tesseract.js';
 import sharp from 'sharp';
 import { toXlsx } from './toxlsx.js';
 
-const getImage = async (document) => {
+export const getImage = async (document) => {
   const Buffers = [];
-
-  console.time('normalize');
 
   for await (const image of document) {
     Buffers.push(image);
     break;
   }
-  console.timeEnd('normalize');
   return Buffers[0];
 };
 
-const getSharpImage = async (image) => {
+export const getSharpImage = async (image) => {
   const imageToSharp = sharp(image);
   // Obtener metadatos de la imagen para determinar su altura
   const metadata = await imageToSharp.metadata();
@@ -119,4 +116,4 @@ async function main() {
   // toXlsx([finalJson]);
   console.timeEnd('PDF Processing');
 }
-main();
+// main();
